@@ -9,3 +9,4 @@ doing this now.
 
 1. [**Day 1**](src/day_1.rs)
 2. [**Day 2**](src/day_2.rs)
+3. [**Day 3**](src/day_3.rs)
