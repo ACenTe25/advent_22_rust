@@ -2,10 +2,12 @@ mod general;
 mod day_1;
 mod day_2;
 mod day_3;
+mod day_4;
 
 use day_1::*;
 use day_2::*;
 use day_3::*;
+use day_4::*;
 
 fn main() {
     match get_elf_calories() {
@@ -37,4 +39,15 @@ fn main() {
         Result::Ok(ans) => println!("Day 3 Part 2 result: {} total priority.\n\n", ans),
         Result::Err(error) => println!("Error in Day 3 Part 2: {:?}\n\n", error),
     };
+
+    match get_complete_overlaps() {
+        Result::Ok(ans) => println!("Day 4 Part 1 result: {} complete overlaps.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 4 Part 1: {:?}\n\n", error),
+    };
+
+    match get_partial_overlaps() {
+        Result::Ok(ans) => println!("Day 4 Part 2 result: {} partial overlaps.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 4 Part 2: {:?}\n\n", error),
+    };
+
 }
