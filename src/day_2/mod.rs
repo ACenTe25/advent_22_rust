@@ -81,7 +81,7 @@ impl RPSMove {
         
             'C' | 'Z' => Ok(RPSMove::Scissors),
         
-            _ => Err(anyhow!("Unknown encryption character: '{}'", encrypted_move)),
+            _ => Err(anyhow!("Unknown encrypted move: '{}'", encrypted_move)),
         }
     }
 
@@ -152,6 +152,8 @@ pub struct RPSRound {
 
 
 impl RPSRound {
+
+    // Part 1:
     fn new(line: &str) -> Result<Self> {
         
         // Get the characters
@@ -167,7 +169,7 @@ impl RPSRound {
 
         // Skip the space
         line_chars.next();
-        
+
         // Get the self move
         let Some(self_char) = line_chars.next() else {
             return Err(anyhow!("Only one character found in round"))
@@ -184,6 +186,97 @@ impl RPSRound {
             self_move,
             result
         })
+    }
+
+    // Part 2:
+    fn new_2(line: &str) -> Result<Self> {
+        // Get the characters
+        let mut line_chars = line.chars();
+
+        // Get the opponent's move
+        let Some(opponent_char) = line_chars.next() else {
+            return Err(anyhow!("No characters found in round"))
+        };
+
+        let opponent_move = RPSMove::decrypt_from_char(opponent_char)
+        .context("decrypting new round (correct key")?;
+
+        // Skip the space
+        line_chars.next();
+
+        // Get the desired strategy
+        let Some(self_char) = line_chars.next() else {
+            return Err(anyhow!("Only one character found in round"))
+        };
+
+        let self_strategy = StrategyMove::decrypt_strategy_from_char(self_char)
+        .context("decrypting new round (correct key)")?;
+
+        let self_move = self_strategy.move_with_strategy(opponent_move);
+
+        // Get the result
+        let result = self_move.play(opponent_move);
+        
+        Ok(RPSRound {
+            opponent_move,
+            self_move,
+            result
+        })
+    }
+}
+
+// Part 2:
+pub enum StrategyMove {
+    Win,
+    Lose,
+    Draw
+}
+
+// Part 2:
+impl StrategyMove {
+
+    fn decrypt_strategy_from_char(encrypted_strategy: char) -> Result<StrategyMove> {
+
+        match encrypted_strategy {
+            
+            'X' => Ok(StrategyMove::Lose),
+
+            'Y' => Ok(StrategyMove::Draw),
+
+            'Z' => Ok(StrategyMove::Win),
+
+            _ => Err(anyhow!("Unknown encrypted strategy '{}'", encrypted_strategy)),
+        }
+    }
+
+    fn move_with_strategy(&self, opponent_move: RPSMove) -> RPSMove {
+
+        match self {
+
+            StrategyMove::Lose => {
+                match opponent_move {
+                    RPSMove::Rock => RPSMove::Scissors,
+                    RPSMove::Paper => RPSMove::Rock,
+                    _ => RPSMove::Paper,
+                }
+            }
+
+            StrategyMove::Draw => {
+                match opponent_move {
+                    RPSMove::Rock => RPSMove::Rock,
+                    RPSMove::Paper => RPSMove::Paper,
+                    _ => RPSMove::Scissors,
+                }
+            }
+
+            StrategyMove::Win => {
+                match opponent_move {
+                    RPSMove::Rock => RPSMove::Paper,
+                    RPSMove::Paper => RPSMove::Scissors,
+                    _ => RPSMove::Rock,
+                }
+            }
+        }
     }
 }
 
@@ -204,6 +297,7 @@ fn get_encrypted_rps_rounds() -> Result<Vec<String>> {
 
 }
 
+// Part 1:
 fn decrypt_rps_rounds(input_lines: &Vec<String>) -> Result<Vec<RPSRound>> {
 
     let mut decrypted_rounds: Vec<RPSRound> = Vec::new();
@@ -214,6 +308,19 @@ fn decrypt_rps_rounds(input_lines: &Vec<String>) -> Result<Vec<RPSRound>> {
 
     Ok(decrypted_rounds)
 }
+
+// Part 2:
+fn decrypt_rps_rounds_2(input_lines: &Vec<String>) -> Result<Vec<RPSRound>> {
+
+    let mut decrypted_rounds: Vec<RPSRound> = Vec::new();
+
+    for line in input_lines {
+        decrypted_rounds.push(RPSRound::new_2(line).context("decrypting RPS rounds (correct strategy)")?);
+    }
+
+    Ok(decrypted_rounds)
+}
+
 
 fn get_game_score(decrypted_rounds: &[RPSRound]) -> i32 {
     
@@ -228,12 +335,51 @@ fn get_game_score(decrypted_rounds: &[RPSRound]) -> i32 {
     game_score
 }
 
+// Part 1:
 pub fn simulate_input_strategy_results() -> Result<i32> {
 
     let input_lines = get_encrypted_rps_rounds()
     .context("simulating input strategy results")?;
 
     let decrypted_rounds = decrypt_rps_rounds(&input_lines)
+    .context("simulating input strategy results")?;
+
+    Ok(get_game_score(&decrypted_rounds))
+}
+
+/*--- Part Two ---
+
+The Elf finishes helping with the tent and sneaks back over to you. "Anyway, the second column 
+says how the round needs to end: X means you need to lose, Y means you need to end the round 
+in a draw, and Z means you need to win. Good luck!"
+
+The total score is still calculated in the same way, but now you need to figure out what shape 
+to choose so the round ends as indicated. The example above now goes like this:
+
+    In the first round, your opponent will choose Rock (A), and you need the round to end in a 
+    draw (Y), so you also choose Rock. This gives you a score of 1 + 3 = 4.
+    In the second round, your opponent will choose Paper (B), and you choose Rock so you lose 
+    (X) with a score of 1 + 0 = 1.
+    In the third round, you will defeat your opponent's Scissors with Rock for a score of 
+    1 + 6 = 7.
+
+Now that you're correctly decrypting the ultra top secret strategy guide, you would get a total 
+score of 12.
+
+Following the Elf's instructions for the second column, what would your total score be if 
+everything goes exactly according to your strategy guide?
+ */
+
+ // So I will leave the original functions for documentation, and add new "correct" ones for
+ // getting the correct encryption keys for the strategy.
+
+ // Part 2:
+pub fn simulate_input_strategy_results_2() -> Result<i32> {
+
+    let input_lines = get_encrypted_rps_rounds()
+    .context("simulating input strategy results")?;
+
+    let decrypted_rounds = decrypt_rps_rounds_2(&input_lines)
     .context("simulating input strategy results")?;
 
     Ok(get_game_score(&decrypted_rounds))

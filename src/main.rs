@@ -3,7 +3,7 @@ mod day_1;
 mod day_2;
 
 use day_1::*;
-use day_2::simulate_input_strategy_results;
+use day_2::*;
 
 fn main() {
     match get_elf_calories() {
@@ -19,5 +19,10 @@ fn main() {
     match simulate_input_strategy_results() {
         Result::Ok(ans) => println!("Day 2 Part 1 result: {} points.\n\n", ans),
         Result::Err(error) => println!("Error in Day 2 Part 1: {:?}\n\n", error),
+    };
+
+    match simulate_input_strategy_results_2() {
+        Result::Ok(ans) => println!("Day 2 Part 2 result: {} points.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 2 Part 2: {:?}\n\n", error),
     };
 }

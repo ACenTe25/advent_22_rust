@@ -8,3 +8,4 @@ doing this now.
 ### Index
 
 1. [**Day 1**](src/day_1/mod.rs)
+2. [**Day 2**](src/day_2/mod.rs)
