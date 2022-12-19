@@ -32,4 +32,9 @@ fn main() {
         Result::Ok(ans) => println!("Day 3 Part 1 result: {} total priority.\n\n", ans),
         Result::Err(error) => println!("Error in Day 3 Part 1: {:?}\n\n", error),
     };
+
+    match get_badges_priority() {
+        Result::Ok(ans) => println!("Day 3 Part 2 result: {} total priority.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 3 Part 2: {:?}\n\n", error),
+    };
 }

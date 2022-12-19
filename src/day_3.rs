@@ -105,6 +105,21 @@ impl ItemTypePriorities {
         priorities
 
     }
+
+    // Part 2:
+    fn get_badges_priorities(&self, rucksack_groups: &[RucksackGroup]) -> Vec<i32> {
+
+        let mut priorities: Vec<i32> = Vec::new();
+
+        for rucksack_group in rucksack_groups {
+
+            // Should never panic because RucksackGroup can't contain invalid Item Types
+            priorities.push(self.get_item_priority(rucksack_group.badge)
+        .expect("Invalid Item Type as Badge!"));
+        }
+
+        priorities
+    }
 }
 
 struct Rucksack {
@@ -214,6 +229,183 @@ pub fn get_total_priority() -> Result<i32> {
     .context("getting total rucksack priority sum")?;
 
     let priorities_vec = item_types.get_rucksacks_priorities(&rucksack_vec);
+
+    Ok(priorities_vec.iter().sum())
+}
+
+/*--- Part Two ---
+
+As you finish identifying the misplaced items, the Elves come to you with another 
+issue.
+
+For safety, the Elves are divided into groups of three. Every Elf carries a badge 
+that identifies their group. For efficiency, within each group of three Elves, 
+the badge is the only item type carried by all three Elves. That is, if a group's 
+badge is item type B, then all three Elves will have item type B somewhere in 
+their rucksack, and at most two of the Elves will be carrying any other item type.
+
+The problem is that someone forgot to put this year's updated authenticity sticker 
+on the badges. All of the badges need to be pulled out of the rucksacks so the new 
+authenticity stickers can be attached.
+
+Additionally, nobody wrote down which item type corresponds to each group's badges. 
+The only way to tell which item type is the right one is by finding the one item 
+type that is common between all three Elves in each group.
+
+Every set of three lines in your list corresponds to a single group, but each group 
+can have a different badge item type. So, in the above example, the first group's 
+rucksacks are the first three lines:
+
+vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+
+And the second group's rucksacks are the next three lines:
+
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw
+
+In the first group, the only item type that appears in all three rucksacks is 
+lowercase r; this must be their badges. In the second group, their badge item 
+type must be Z.
+
+Priorities for these items must still be found to organize the sticker attachment 
+efforts: here, they are 18 (r) for the first group and 52 (Z) for the second group. 
+The sum of these is 70.
+
+Find the item type that corresponds to the badges of each three-Elf group. What is 
+the sum of the priorities of those item types?
+ */
+
+
+
+ struct RucksackGroup {
+    rucksack_1_items: String,
+    rucksack_2_items: String,
+    rucksack_3_items: String,
+    badge: char
+}
+
+fn get_elf_rucksack_groups(rucksack_lines: &Vec<String>) -> Result<Vec<RucksackGroup>> {
+
+    // Create groups vector
+    let mut rucksack_group_vec: Vec<RucksackGroup> = Vec::new();
+
+    // Get a rucksack counter to assemble groups of 3
+    let mut rucksack_counter = 1;
+
+    // Create optional buffers for the contents
+    let mut buffer_rucksack_1: Option<String> = None;
+    let mut buffer_rucksack_2: Option<String> = None;
+
+    let mut last_flag_3 = false;
+    
+    for rucksack in rucksack_lines {
+
+        // Check that rucksack contains only valid items
+        for item in rucksack.chars() {
+            if item.is_ascii_lowercase() || item.is_ascii_uppercase() {
+                continue
+            } else {
+                return Err(anyhow!("Unknown item type '{}'", item))
+            }
+        }
+
+        // Save rucksack 1 contents in buffer
+        if rucksack_counter == 1 {
+
+            buffer_rucksack_1 = Some(rucksack.clone());
+            rucksack_counter += 1;
+            last_flag_3 = false;
+
+        // Save rucksack 2 contents in buffer
+        } else if rucksack_counter == 2 {
+
+            buffer_rucksack_2 = Some(rucksack.clone());
+            rucksack_counter += 1;
+            last_flag_3 = false;
+            
+
+        // Get contents from previous buffers and get current contents
+        } else {
+
+            let Some(rucksack_1_items) = buffer_rucksack_1.clone() else {
+
+                return Err(anyhow!("Uninitialized Rucksack!"))
+
+            };
+
+            let Some(rucksack_2_items) = buffer_rucksack_2.clone() else {
+
+                return Err(anyhow!("Uninitialized Rucksack!"))
+                
+            };
+
+            let rucksack_3_items = rucksack.clone();
+
+            // Get badge
+            let mut badge_opt: Option<char> = None;
+
+            for item in rucksack_1_items.chars() {
+                if rucksack_2_items.contains(item) && rucksack_3_items.contains(item) {
+                    badge_opt = Some(item);
+                    break
+                }
+            }
+
+            let Some(badge) = badge_opt else {
+
+                return Err(
+                    anyhow!(
+                        "Elf group without a badge:\nElf 1 Rucksack: '{}'\nElf 2 Rucksack: '{}'\nElf 3 Rucksack: '{}'\n",
+                        rucksack_1_items,
+                        rucksack_2_items,
+                        rucksack_3_items
+                    )
+                )
+            };
+
+            // Create this Group
+            rucksack_group_vec.push(
+                RucksackGroup {
+                    rucksack_1_items,
+                    rucksack_2_items,
+                    rucksack_3_items,
+                    badge
+                }
+            );
+
+            // Reset buffers and counter
+            buffer_rucksack_1 = None;
+            buffer_rucksack_2 = None;
+            rucksack_counter = 1;
+            last_flag_3 = true;
+        }
+    }
+
+    if last_flag_3 {
+        
+        Ok(rucksack_group_vec)
+    
+    } else {
+    
+        Err(anyhow!("Last group was incomplete!"))
+    }
+}
+
+// Day 3 Part 2:
+pub fn get_badges_priority() -> Result<i32> {
+
+    let item_types = ItemTypePriorities::new();
+
+    let rucksack_lines = get_rucksack_lines()
+    .context("getting total rucksack priority sum")?;
+
+    let rucksack_groups_vec = get_elf_rucksack_groups(&rucksack_lines)
+    .context("getting total rucksack priority sum")?;
+
+    let priorities_vec = item_types.get_badges_priorities(&rucksack_groups_vec);
 
     Ok(priorities_vec.iter().sum())
 }
