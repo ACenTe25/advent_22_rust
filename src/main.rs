@@ -4,12 +4,14 @@ mod day_2;
 mod day_3;
 mod day_4;
 mod day_5;
+mod day_6;
 
 use day_1::*;
 use day_2::*;
 use day_3::*;
 use day_4::*;
 use day_5::*;
+use day_6::*;
 
 fn main() {
     match get_elf_calories() {
@@ -59,6 +61,12 @@ fn main() {
 
     match get_stack_tops_with_cratemover_9001() {
         Result::Ok(ans) => println!("Day 5 Part 2 result: Top stack boxes with CrateMover 9001: {}.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 5 Part 2: {:?}\n\n", error),
+    };
+
+    match get_start_of_packet_4_unrepeated() {
+        Result::Ok(Some(ans)) => println!("Day 6 Part 1 result: Start-of-packet position: {}.\n\n", ans),
+        Result::Ok(None) => println!("Day 6 Part 1 result: No start of packet found!"),
         Result::Err(error) => println!("Error in Day 5 Part 2: {:?}\n\n", error),
     };
 
