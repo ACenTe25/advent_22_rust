@@ -57,4 +57,9 @@ fn main() {
         Result::Err(error) => println!("Error in Day 5 Part 1: {:?}\n\n", error),
     };
 
+    match get_stack_tops_with_cratemover_9001() {
+        Result::Ok(ans) => println!("Day 5 Part 2 result: Top stack boxes with CrateMover 9001: {}.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 5 Part 2: {:?}\n\n", error),
+    };
+
 }
