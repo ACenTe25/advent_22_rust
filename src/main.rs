@@ -3,11 +3,13 @@ mod day_1;
 mod day_2;
 mod day_3;
 mod day_4;
+mod day_5;
 
 use day_1::*;
 use day_2::*;
 use day_3::*;
 use day_4::*;
+use day_5::*;
 
 fn main() {
     match get_elf_calories() {
@@ -48,6 +50,11 @@ fn main() {
     match get_partial_overlaps() {
         Result::Ok(ans) => println!("Day 4 Part 2 result: {} partial overlaps.\n\n", ans),
         Result::Err(error) => println!("Error in Day 4 Part 2: {:?}\n\n", error),
+    };
+
+    match get_stack_tops() {
+        Result::Ok(ans) => println!("Day 5 Part 1 result: Top stack boxes: {}.\n\n", ans),
+        Result::Err(error) => println!("Error in Day 5 Part 1: {:?}\n\n", error),
     };
 
 }

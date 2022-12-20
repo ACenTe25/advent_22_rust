@@ -30,3 +30,19 @@ pub fn read_text_input(path: &str) -> Result<String> {
         Err(anyhow!("File '{}' does not exist", path))
     }
 }
+
+pub fn get_input_lines(path: &str) -> Result<Vec<String>> {
+
+    // Get input file as a string
+    let input_string = read_text_input(path)
+    .context("getting input lines")?;
+
+    // Turn lines into vector of Strings
+    let mut input_lines: Vec<String> = Vec::new();
+
+    for line in input_string.lines() {
+        input_lines.push(line.to_string());
+    }
+
+    Ok(input_lines)
+}
