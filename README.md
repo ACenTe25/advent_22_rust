@@ -12,3 +12,4 @@ doing this now.
 3. [**Day 3**](src/day_3.rs)
 4. [**Day 4**](src/day_4.rs)
 5. [**Day 5**](src/day_5.rs)
+6. [**Day 6**](src/day_6.rs)

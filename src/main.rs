@@ -67,7 +67,13 @@ fn main() {
     match get_start_of_packet_4_unrepeated() {
         Result::Ok(Some(ans)) => println!("Day 6 Part 1 result: Start-of-packet position: {}.\n\n", ans),
         Result::Ok(None) => println!("Day 6 Part 1 result: No start of packet found!"),
-        Result::Err(error) => println!("Error in Day 5 Part 2: {:?}\n\n", error),
+        Result::Err(error) => println!("Error in Day 6 Part 1: {:?}\n\n", error),
+    };
+
+    match get_start_of_packet_14_unrepeated() {
+        Result::Ok(Some(ans)) => println!("Day 6 Part 2 result: Start-of-message position: {}.\n\n", ans),
+        Result::Ok(None) => println!("Day 6 Part 2 result: No start of message found!"),
+        Result::Err(error) => println!("Error in Day 6 Part 2: {:?}\n\n", error),
     };
 
 }
